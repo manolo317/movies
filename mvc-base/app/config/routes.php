@@ -15,5 +15,7 @@
 	*/
 
 	$routes = [
-		"/" => "home",
+        "/" => "home",
+        "/home" => "home",
+        "/details" => "movieDetails",
 	];

@@ -3,7 +3,7 @@
 namespace Controller;
 
 use View\View; //on peut donc utiliser cette classe comme View au lieu de \View\View
-
+use Model\Manager\MovieManager;
 class DefaultController 
 {
 	/**
@@ -11,8 +11,26 @@ class DefaultController
 	 */
 	public function home()
 	{
-		View::show("home.php", "Accueil !");
+        $movieManager = new MovieManager();
+        $movies = $movieManager->findAll();
+        //var_dump($movies);
+
+        View::show("home.php", "Movie | Accueil", ["movies" =>$movies]);
+
 	}
+    public function movieDetails()
+    {
+        $movieManager = new MovieManager();
+        //créé le movie dont l'Id est dans l'URL
+        $id = $_GET['id'];
+        $movie = $movieManager->findOneById($id);
+        //si le movie n'existe pas erreur 404
+        if(empty($movie)){
+            return $this->error404();
+        }
+        //affiche la vue en lui passant le post
+        View::show("movie_details.php", $movie->getTitle(), ["movie" =>$movie]);
+    }
 
 	/**
 	 * Affiche la page d'erreur 404
