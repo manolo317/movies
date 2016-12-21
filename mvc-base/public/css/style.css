@@ -23,11 +23,18 @@ footer
 }
 figure.thumbnail
 {
-
 	margin:40px;
 	background-color: white;
 	box-shadow: 5px 5px 5px #504E4E;
 	text-align: center;
+	transition: transform 1s;
+}
+figure.thumbnail:hover
+{
+	transform: scale(1.2);
+	-ms-transform: scale(1.2); /* IE 9 */
+	-webkit-transform: scale(1.2); /* Safari */
+	box-shadow: 5px 5px 5px 5px grey;
 }
 img
 {
@@ -38,4 +45,12 @@ img.movie_details
 {
 	float: left;
 	margin-right: 20px;
+}
+div.movie_details{
+	margin-bottom: 20px;
+}
+.form-signin{
+	background-color: azure;
+	margin: 10px;
+	border: 1px solid black;
 }

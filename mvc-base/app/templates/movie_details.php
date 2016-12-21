@@ -13,15 +13,16 @@
     <article>
         <h3><?= $movie->getTitle() ?></h3>
         <img src="<?= BASE_URL ?>public/posters/<?= $movie->getImdbId() ?>.jpg" alt="<?= $movie->getTitle() ?>" title="<?= $movie->getTitle() ?>" class="movie_details">
-        <div><strong>Year of parution: </strong><?= $movie->getYear() ?></div>
-        <div><strong>Casting: </strong><?= $movie->getCast() ?></div>
-        <div><p><strong>Abstract: </strong><?= $movie->getPlot() ?></p></div>
-        <div><strong>Directors: </strong><?= $movie->getDirectors() ?></div>
-        <div><strong>Writers: </strong><?= $movie->getWriters() ?></div>
-        <div><strong>Rating: </strong><?= $movie->getRating() ?></div>
-        <div><strong>Votes: </strong><?= $movie->getVotes() ?></div>
-        <div><strong>Runtime: </strong><?= $movie->getRuntime() ?> minutes</div>
-        <div><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
+        <div class="movie_details"><strong>Year of parution: </strong><?= $movie->getYear() ?></div>
+        <div class="movie_details"><strong>Casting: </strong><?= $movie->getCast() ?></div>
+        <div class="movie_details"><strong>Abstract: </strong><?= $movie->getPlot() ?></div>
+        <div class="movie_details"><strong>Genre: </strong><?= $genre['genre'] ?></div>
+        <div class="movie_details"><strong>Directors: </strong><?= $movie->getDirectors() ?></div>
+        <div class="movie_details"><strong>Writers: </strong><?= $movie->getWriters() ?></div>
+        <div class="movie_details"><strong>Rating: </strong><?= $movie->getRating() ?></div>
+        <div class="movie_details"><strong>Votes: </strong><?= $movie->getVotes() ?></div>
+        <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?> minutes</div>
+        <div class="movie_details"><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
     </article>
 
 </section>
