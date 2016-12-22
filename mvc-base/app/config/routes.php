@@ -18,4 +18,8 @@
         "/" => "home",
         "/home" => "home",
         "/details" => "movieDetails",
+        "/register" => "register",
+        "/login" => "login",
+        "/logout" => "logout",
+        "/admin/home" => "adminMenu",
 	];

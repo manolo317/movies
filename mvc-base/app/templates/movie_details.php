@@ -19,9 +19,9 @@
         <div class="movie_details"><strong>Genre: </strong><?= $genre['genre'] ?></div>
         <div class="movie_details"><strong>Directors: </strong><?= $movie->getDirectors() ?></div>
         <div class="movie_details"><strong>Writers: </strong><?= $movie->getWriters() ?></div>
-        <div class="movie_details"><strong>Rating: </strong><?= $movie->getRating() ?></div>
+        <div class="movie_details"><strong>Rating: </strong><?= $movie->getRating() ?>/10</div>
         <div class="movie_details"><strong>Votes: </strong><?= $movie->getVotes() ?></div>
-        <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?> minutes</div>
+        <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?>utes</div>
         <div class="movie_details"><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
     </article>
 

@@ -5,6 +5,7 @@
  * Date: 19/12/2016
  * Time: 14:06
  */
+//$user = $_SESSION['user'];
 ?>
 <!doctype html>
 <html lang="en">
@@ -22,7 +23,7 @@
         <header>
             <div class="container">
                 <div class="row">
-                    <div class="navbar navbar-inverse navbar-top col-md-8">
+                    <div class="navbar navbar-inverse navbar-top">
                         <div class="container">
                             <div class="navbar-header">
                                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -36,38 +37,29 @@
                             <div id="navbar" class="collapse navbar-collapse">
                                 <ul class="nav navbar-nav">
                                     <li><a href="<?= BASE_URL ?>" class="glyphicon glyphicon-home"></a></li>
-                                    <li><a href="#">FAQ</a></li>
-                                    <li><a href="#">Contact</a></li>
-                                    <li><a href="#">Admin</a></li>
+                                    <li><a href="<?= BASE_URL ?>register">Register</a></li>
+                                    <li><a href="<?= BASE_URL ?>login">Login</a></li>
+                                    <li><a href="<?= BASE_URL ?>logout">Logout</a></li>
+                                    <li><?php if(!empty($_SESSION['user'])){
+                                                    if($_SESSION['user']['role'] === 'admin'){ ?>
+                                                        <a href="<?= BASE_URL ?>admin/home">Admin</a> <?php
+                                                    }
+                                                } ?> </li>
+                                    <li><?php if (!empty($_SESSION['user'])): ?>
+                                            Connecté en tant que <?= $_SESSION['user']['username'] ?>
+                                            <?php endif; ?></li>
                                 </ul>
                             </div><!--/.nav-collapse -->
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <form class="form-signin">
-                            <h2 class="form-signin-heading">Please sign in</h2>
-                            <label for="inputEmail" class="sr-only">Email address</label>
-                            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                            <label for="inputPassword" class="sr-only">Password</label>
-                            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" value="remember-me"> Remember me
-                                </label>
-                            </div>
-                            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                        </form>
-                    </div>
                 </div>
             </div>
-
         </header>
 
         <?php include("app/templates/$page.php") ?>
 
         <footer>
-            <h2>IMIE 2016 &copy; MANOLO-DL17</h2>
+            <h3>IMIE 2016 &copy; MANOLO-DL17</h3>
         </footer>
-        </div>
     </body>
 </html>

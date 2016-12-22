@@ -13,8 +13,25 @@ class MovieManager
 {
     public function findAll()
     {
+
         $sql = "SELECT id, imdbId, title, year, cast, plot, directors, writers, rating, votes, runtime, trailerUrl
                 FROM movies ORDER BY rating DESC;";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_CLASS, '\Model\Entity\Movie');
+
+        return $results;
+    }
+
+    public function findAllPage($currentPage)
+    {
+        $numPerPage = 3; //nombre de films par page
+        $offset = ($currentPage-1) * $numPerPage; //nombre de films par page à sauter à chaque requetes
+        $sql = "SELECT id, imdbId, title, year, cast, plot, directors, writers, rating, votes, runtime, trailerUrl
+                FROM movies ORDER BY rating DESC LIMIT $numPerPage OFFSET $offset;";
 
         $dbh = Db::getDbh();
 
@@ -101,8 +118,12 @@ class MovieManager
     {
         $sql = "SELECT id, imdbId, title, year, cast, plot, directors, writers, rating, votes, runtime, trailerUrl
                 FROM movies 
-                WHERE title
-                LIKE :research
+                WHERE title LIKE :research
+                OR year LIKE :research
+                OR cast LIKE :research
+                OR directors LIKE :research
+                OR writers LIKE :research
+                OR plot LIKE :research
                 ORDER BY rating DESC;";
 
         $dbh = Db::getDbh();
@@ -113,5 +134,32 @@ class MovieManager
         $result = $stmt->fetchAll(PDO::FETCH_CLASS,'\Model\Entity\Movie');
 
         return $result;
+    }
+
+    public function findYear()
+    {
+        $sql = "SELECT year
+                FROM movies 
+                GROUP BY year;";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_CLASS, '\Model\Entity\Movie');
+
+        return $results;
+    }
+
+    public function countAll()
+    {
+        $sql = "SELECT COUNT(*) FROM movies";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $count = $stmt->fetchColumn(); // quand on récupère une seule cellule
+        return $count;
     }
 }

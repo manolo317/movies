@@ -1,4 +1,5 @@
 <?php
+session_start();
 	//ceci est le contrôleur frontal
 	//il doit être short & sweet
 
@@ -9,9 +10,9 @@
 	require("app/config/config.php");
 
 	//charge toutes nos dépendances composer
-	if (file_exists("vendor/autoload.php")){
+	//if (file_exists("vendor/autoload.php")){
 		require("vendor/autoload.php");
-	}
+	//}
 
 	//auto chargement de nos classes
 	spl_autoload_register(function($className){

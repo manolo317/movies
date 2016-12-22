@@ -13,6 +13,20 @@ use PDO;
 
 class GenreManager
 {
+    public function findAll()
+    {
+        $sql = "SELECT id, name
+                FROM genres ;";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_CLASS, '\Model\Entity\Genre');
+
+        return $results;
+    }
+
     public function findAllByGenre($id)
     {
         $sql = "SELECT GROUP_CONCAT(name) AS genre 
