@@ -5,6 +5,12 @@
  * Date: 22/12/2016
  * Time: 16:17
  */
+if(!empty($_GET['delete'])){
+    if($_GET['delete'] == 1){
+        $message = "Your movie is deleted";
+    }
+}
+
 ?>
 
 <section>
@@ -38,11 +44,15 @@
             <input class="find_button" type="submit" value="Find!"/>
         </form>
     </nav>
+    <div>
+        <a href="<?= BASE_URL ?>admin/create"><h2>Create a movie</h2></a>
+    </div>
+
 
     <h2><?= $message ?></h2> <!--affichage message si pas de résultats-->
     <?php if($message === null){ /*si films trouvés j'affiche le titre et le nombre de films*/
         $countMovies = count($movies);
-        echo "<h2>The Best Rated Movies</h2>";
+        echo "<h2>Movies list:</h2>";
         if($countMovies>1){
             echo "<h3>".$countMovies." movies found</h3>";
         }
@@ -54,12 +64,12 @@
     <?php foreach($movies as $movie): ?>
         <article>
             <ul>
-                <li><?= $movie->getTitle() ?></li>
-                <a href="<?= BASE_URL ?>details?id=<?= $movie->getId() ?>">Lire la suite</a>
-                <a href="<?= BASE_URL ?>admin/articles/delete?id=<?=$movie->getId();?>" class="glyphicon glyphicon-trash" title="supprimer"></a>
-                <a href="<?= BASE_URL ?>admin/articles/update?id=<?=$movie->getId();?>" class="glyphicon glyphicon-refresh" title="modifier"></a>
+                <li><?= $movie->getTitle() ?>
+                    <a href="<?= BASE_URL ?>admin/delete?id=<?=$movie->getId();?>" class="glyphicon glyphicon-trash" title="delete"></a>
+                    <a href="<?= BASE_URL ?>admin/update?id=<?=$movie->getId();?>" class="glyphicon glyphicon-refresh" title="update"></a>
+                </li>
             </ul>
         </article>
     <?php endforeach; ?>
 </section>
-<a href="<?= BASE_URL ?>admin/movies/add">Create Film</a>
+

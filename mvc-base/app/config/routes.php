@@ -22,4 +22,8 @@
         "/login" => "login",
         "/logout" => "logout",
         "/admin/home" => "adminMenu",
+        "/admin/create" => "adminCreateMovie",
+        "/admin/delete" => "adminDeleteMovie",
+        "/admin/update" => "adminUpdateMovie",
+        "/forbidden" => "error403",
 	];

@@ -23,11 +23,55 @@ class Movie
 	 */
 	public function isValid()
 	{
-		$isValid = true;
+        $isValid = true;
+        if(empty($this->title)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the title !";
+        }
+        if(empty($this->year)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the year !";
+        }
+        if(empty($this->cast)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the cast !";
+        }
+        if(empty($this->directors)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the directors !";
+        }
+        if(empty($this->writers)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the writers !";
+        }
+        if(empty($this->plot)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the plot !";
+        }
+        if(empty($this->trailerUrl)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the trailer Url !";
+        }
+        if(empty($this->runtime)){
+            $isValid = false;
+            $this->validationErrors[] = "Please inform the runtime !";
+        }
+        if(strlen($this->title) > 255){
+            $isValid = false;
+            $this->validationErrors[] = "Your title is too long !";
+        }
+        if(strlen($this->runtime) > 25){
+            $isValid = false;
+            $this->validationErrors[] = "Your title is too long !";
+        }
+        if(strlen($this->year) != 4){
+            $isValid = false;
+            $this->validationErrors[] = "Your year is not valid !";
+        }
 
-		//valider les données de l'instance ici 
 
-		return $isValid;
+
+        return $isValid;
 	}
 
 	/**
@@ -38,9 +82,19 @@ class Movie
 		return $this->validationErrors;
 	}
 
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
 	/**
 	 * Pas besoin de setter pour l'id, MySQL s'en charge
 	 */
+
+
 	public function getId()
 	{
 		return $this->id;

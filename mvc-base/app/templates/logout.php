@@ -8,5 +8,5 @@
 //efface la donnée qui permet d'identifier l'utilisateur
 unset($_SESSION['user']);
 
-//redirige ailleurs
+//redirige vers menu
 header("Location: ".BASE_URL);

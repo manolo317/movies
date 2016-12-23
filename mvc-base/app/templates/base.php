@@ -39,14 +39,14 @@
                                     <li><a href="<?= BASE_URL ?>" class="glyphicon glyphicon-home"></a></li>
                                     <li><a href="<?= BASE_URL ?>register">Register</a></li>
                                     <li><a href="<?= BASE_URL ?>login">Login</a></li>
-                                    <li><a href="<?= BASE_URL ?>logout">Logout</a></li>
+                                    <li><a href="<?= BASE_URL ?>logout" class="glyphicon glyphicon-off" title="log out"></a></li>
                                     <li><?php if(!empty($_SESSION['user'])){
                                                     if($_SESSION['user']['role'] === 'admin'){ ?>
                                                         <a href="<?= BASE_URL ?>admin/home">Admin</a> <?php
                                                     }
                                                 } ?> </li>
                                     <li><?php if (!empty($_SESSION['user'])): ?>
-                                            Connecté en tant que <?= $_SESSION['user']['username'] ?>
+                                            <div class="connected">Connected as <?= $_SESSION['user']['username'] ?> </div>
                                             <?php endif; ?></li>
                                 </ul>
                             </div><!--/.nav-collapse -->

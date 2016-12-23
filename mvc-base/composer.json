@@ -1,5 +1,6 @@
 {
     "require": {
-        "ircmaxell/random-lib": "^1.2"
+        "ircmaxell/random-lib": "^1.2",
+        "abeautifulsite/simpleimage": "^2.6"
     }
 }

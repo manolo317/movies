@@ -2,6 +2,9 @@
 
 namespace Controller;
 
+use Model\Entity\Movie;
+use Model\Entity\MovieGenre;
+use Model\Manager\MovieGenreManager;
 use Model\Manager\UserManager;
 use View\View; //on peut donc utiliser cette classe comme View au lieu de \View\View
 use Model\Manager\MovieManager;
@@ -94,6 +97,13 @@ class DefaultController
 		header("HTTP/1.0 404 Not Found");
 		View::show("errors/404.php", "Oups ! Perdu ?");
 	}
+
+    public function error403()
+    {
+        //envoie une entête 403 (pour notifier les clients que ça a foiré)
+        header("HTTP/1.0 403 Forbidden");
+        View::show("errors/403.php", "Oups ! Forbidden ?");
+    }
 
 	public function register()
     {
@@ -212,58 +222,306 @@ class DefaultController
 
     public function adminMenu()
     {
-        //j'instancie mes managers
-        $movieManager = new MovieManager();
-        $genreManager = new GenreManager();
-        //je retourne les genres pour faire mon form
-        $genres = $genreManager->findAll();
-        //je retourne les années pour faire mon form
-        $years = $movieManager->findYear();
+        $userManager = new UserManager();
+        if($userManager->adminAllowedOnly()){ //je check si c'est un admin
 
-        $message = null;
-        // si j'ai recu un $_GET de mon form
-        if(!empty($_GET)){
-            //si j'ai rempli un genre et une année
-            if(!empty($_GET['genre']) && !empty($_GET['year'])){
-                //je retourne tous les films du genre et de l'année
-                $movies = $movieManager->findAllByGenreAndYear($_GET['genre'], $_GET['year']);
-                // si pas de films => message
-                if(empty($movies)){
-                    $message = "No results, try another research!";
+            //j'instancie mes managers
+            $movieManager = new MovieManager();
+            $genreManager = new GenreManager();
+            //je retourne les genres pour faire mon form
+            $genres = $genreManager->findAll();
+            //je retourne les années pour faire mon form
+            $years = $movieManager->findYear();
+
+            $message = null;
+            // si j'ai recu un $_GET de mon form
+            if(!empty($_GET)){
+                //si j'ai rempli un genre et une année
+                if(!empty($_GET['genre']) && !empty($_GET['year'])){
+                    //je retourne tous les films du genre et de l'année
+                    $movies = $movieManager->findAllByGenreAndYear($_GET['genre'], $_GET['year']);
+                    // si pas de films => message
+                    if(empty($movies)){
+                        $message = "No results, try another research!";
+                    }
                 }
-            }
-            //si j'ai rempli un genre
-            else if(!empty($_GET['genre'])){
-                //je retourne tous les films du genre
-                $movies = $movieManager->findAllByGenre($_GET['genre']);
-            }
-            //si j'ai rempli une année
-            else if(!empty($_GET['year'])){
-                //je retourne tous les films de l'année
-                $movies = $movieManager->findAllByYear($_GET['year']);
-            }
-            // si j'ai fait une recherche
-            else if(!empty($_GET['research'])){
-                // je retourne les films contenant la recherche dans le titre
-                $movies = $movieManager->findByResearch($_GET['research']);
-                // si pas de films => message
-                if(empty($movies)){
-                    $message = "No results, try another research!";
+                //si j'ai rempli un genre
+                else if(!empty($_GET['genre'])){
+                    //je retourne tous les films du genre
+                    $movies = $movieManager->findAllByGenre($_GET['genre']);
+                }
+                //si j'ai rempli une année
+                else if(!empty($_GET['year'])){
+                    //je retourne tous les films de l'année
+                    $movies = $movieManager->findAllByYear($_GET['year']);
+                }
+                // si j'ai fait une recherche
+                else if(!empty($_GET['research'])){
+                    // je retourne les films contenant la recherche dans le titre
+                    $movies = $movieManager->findByResearch($_GET['research']);
+                    // si pas de films => message
+                    if(empty($movies)){
+                        $message = "No results, try another research!";
+                    }
+                }
+                else{
+                    // sinon je retourne tous les films triés par note
+                    //$currentPage = (empty($_GET['page']))?1:$_GET['page'];
+                    $movies = $movieManager->findAllByTitle();
+                    //var_dump($movies);
+
                 }
             }
         }
         else{
-            // sinon je retourne tous les films triés par note
-            //$currentPage = (empty($_GET['page']))?1:$_GET['page'];
-            $movies = $movieManager->findAll();
-            var_dump($movies);
-
+            header("Location: ".BASE_URL."forbidden");
         }
 
+
+
+        //var_dump($_GET);
         View::show("admin_menu.php", "Admin | Home", ["movies" =>$movies,
                                                       "message" => $message,
                                                       "genres" =>$genres,
                                                       "years" => $years]);
+    }
+
+    public function adminDeleteMovie()
+    {
+        $userManager = new UserManager();
+        if($userManager->adminAllowedOnly()) { //je check si c'est un admin
+
+            $movieManager = new MovieManager();
+            //supprime le movie dont l'Id est dans l'URL
+            $id = $_GET['id'];
+            $movieManager->deleteMovie($id);
+
+            View::show("delete_movie.php", "Admin | Delete");
+        }
+        else{
+            header("Location: ".BASE_URL."forbidden");
+        }
+    }
+
+    public function adminCreateMovie()
+    {
+        $userManager = new UserManager();
+        if($userManager->adminAllowedOnly()) { //je check si c'est un admin
+
+            //crée une nouvelle instance de film
+            $movie = new Movie();
+            $movieGenre = new MovieGenre();
+
+            $message = NULL;
+            $postErrors = NULL;
+            //j'instancie mes managers
+            $genreManager = new GenreManager();
+            $movieManager = new MovieManager();
+            //je retourne les genres pour faire mon form
+            $genres = $genreManager->findAll();
+
+            // si le formulaire est soumis
+            if(!empty($_POST)){
+                //les infos de l'image
+                //var_dump($_FILES);
+
+                //validation si le film n'existe pas deja
+                $titleMovie = $_POST['title'];
+                $checkMovie = $movieManager->checkMovie($titleMovie);
+                if(empty($checkMovie)){
+                    //validation du fichier upload si un fichier a bien été envoyé
+                    if($_FILES['imdbId']['error'] != 4){
+                        $uploadError = null;
+
+                        //type mime
+                        $file = $_FILES['imdbId']['tmp_name'];
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mime = finfo_file($finfo, $file);
+                        finfo_close($finfo);
+                        //echo $mime;
+
+
+                        if(substr($mime, 0, 5) != "image"){
+                            $uploadError = "MimeType invalide";
+                        }
+                        //taille
+                        if($_FILES['imdbId']['size'] > 1000000){
+                            $uploadError = "Fichier trop lourd";
+                        }
+                        //vérifier les erreurs d'upload
+                        if($_FILES['imdbId']['error'] !== 0){
+                            $uploadError = "Une erreur est survenue";
+                        }
+                        //si on a pas d'erreur ...
+                        if($uploadError == null){
+                            //si ok on déplace/ on redimensionne / on convertie en jpg
+                            $img = new \abeautifulsite\SimpleImage($file);
+                            $imdbId = uniqid();
+                            $destination = $imdbId. ".jpg";
+                            $img->best_fit(350, 520)->save(UPLOAD_DIR. $destination);
+                            //on hydrate la propriété dans l'objet
+                            $movie->setImdbId($imdbId);
+                        }
+
+                    }
+
+                    //hydrate l'instance à partir des données du form
+                    $movie->setTitle($_POST['title']);
+                    $movie->setYear(intval($_POST['year'])); //je type en integer
+                    $movie->setCast($_POST['cast']);
+                    $movie->setDirectors($_POST['directors']);
+                    $movie->setWriters($_POST['writers']);
+                    $movie->setPlot($_POST['plot']);
+                    $movie->setRuntime($_POST['runtime']);
+                    $movie->setTrailerUrl($_POST['trailerUrl']);
+
+
+
+                    //déclenche la validation de l'article, retourne true ou false
+                    if($movie->isValid()){
+
+                        //demande au manager de sauvegarder l'instance
+                        $newMovie = $movieManager->create($movie);
+                        $newMovieId = $newMovie->getId();
+
+                        //je récupère l'id du nouveau film et les genres du form
+                        $genreId = ($_POST['genre']);
+                        //var_dump($_POST['genre']);
+                        //j'inscris en Db les genres du nouveau film
+                        $movieGenreManager = new MovieGenreManager();
+                        foreach ($genreId as $value){
+                            $movieGenreManager->setGenreMovie($newMovieId, $value);
+                        }
+                        $message = "Your movie was well created";
+
+
+                    }
+                    else{
+                        $postErrors = $movie->getValidationErrors();
+
+                    }
+                }
+                else{
+                    $message = "Your movie title already exist";
+                }
+
+            }
+
+        }
+        else {
+            header("Location: " . BASE_URL . "forbidden");
+        }
+
+        View::show("create.php", "Admin | Create", ["genres" =>$genres,
+                                                    "message" =>$message,
+                                                    "postErrors" =>$postErrors]);
+    }
+
+    public function AdminUpdateMovie()
+    {
+        //récupère  l'Id de l'article dans l'URL
+        $id = $_GET['id'];
+
+        //j'instancie mes managers
+        $genreManager = new GenreManager();
+        $movieManager = new MovieManager();
+
+        //j'instancie un nouveau film, Trouve le film
+
+        $updateMovie = $movieManager->findOneById($id);
+
+        $message = NULL;
+        $postErrors = NULL;
+
+        //je retourne les genres pour faire mon form
+        $genres = $genreManager->findAll();
+
+
+        // si le formulaire est soumis
+        if(!empty($_POST)){
+            //les infos de l'image
+            //var_dump($_FILES);
+
+
+            //validation du fichier upload si un fichier a bien été envoyé
+            if($_FILES['imdbId']['error'] != 4){
+                $uploadError = null;
+
+                //type mime
+                $file = $_FILES['imdbId']['tmp_name'];
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $file);
+                finfo_close($finfo);
+                //echo $mime;
+
+
+                if(substr($mime, 0, 5) != "image"){
+                    $uploadError = "MimeType invalide";
+                }
+                //taille
+                if($_FILES['imdbId']['size'] > 1000000){
+                    $uploadError = "Fichier trop lourd";
+                }
+                //vérifier les erreurs d'upload
+                if($_FILES['imdbId']['error'] !== 0){
+                    $uploadError = "Une erreur est survenue";
+                }
+                //si on a pas d'erreur ...
+                if($uploadError == null){
+                    //si ok on déplace/ on redimensionne / on convertie en jpg
+                    $img = new \abeautifulsite\SimpleImage($file);
+                    $imdbId = uniqid();
+                    $destination = $imdbId. ".jpg";
+                    $img->best_fit(350, 520)->save(UPLOAD_DIR. $destination);
+                    //on hydrate la propriété dans l'objet
+                    $updateMovie->setImdbId($imdbId);
+                }
+
+            }
+
+            //hydrate l'instance à partir des données du form
+            $updateMovie->setTitle($_POST['title']);
+            $updateMovie->setYear(intval($_POST['year'])); //je type en integer
+            $updateMovie->setCast($_POST['cast']);
+            $updateMovie->setDirectors($_POST['directors']);
+            $updateMovie->setWriters($_POST['writers']);
+            $updateMovie->setPlot($_POST['plot']);
+            $updateMovie->setRuntime($_POST['runtime']);
+            $updateMovie->setTrailerUrl($_POST['trailerUrl']);
+
+
+            //déclenche la validation du film, retourne true ou false
+            if($updateMovie->isValid()){
+
+                //demande au manager de sauvegarder l'instance
+                $newMovieId = $movieManager->update($updateMovie);
+
+                //je récupère l'id du nouveau film et les genres du form
+                $genreId = ($_POST['genre']);
+                //var_dump($_POST['genre']);
+                //j'inscris en Db les genres du nouveau film
+                $movieGenreManager = new MovieGenreManager();
+                foreach ($genreId as $value){
+                    $movieGenreManager->setGenreMovie($newMovieId, $value);
+                }
+                $message = "Your movie was well updated";
+
+            }
+            else{
+                $postErrors = $updateMovie->getValidationErrors();
+
+            }
+
+        }
+        View::show("update_movie.php", "Admin | Update Movie", ["updateMovie" => $updateMovie,
+                                                                "genres" =>$genres,
+                                                                "message" =>$message,
+                                                                "postErrors" =>$postErrors]);
+    }
+
+    public function addMovieToWishlist()
+    {
+
     }
 }
 

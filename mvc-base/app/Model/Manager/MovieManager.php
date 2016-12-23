@@ -26,6 +26,20 @@ class MovieManager
         return $results;
     }
 
+    public function findAllByTitle()
+    {
+        $sql = "SELECT id, imdbId, title, year, cast, plot, directors, writers, rating, votes, runtime, trailerUrl
+                FROM movies ORDER BY title;";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_CLASS, '\Model\Entity\Movie');
+
+        return $results;
+    }
+
     public function findAllPage($currentPage)
     {
         $numPerPage = 3; //nombre de films par page
@@ -161,5 +175,85 @@ class MovieManager
         $stmt->execute();
         $count = $stmt->fetchColumn(); // quand on récupère une seule cellule
         return $count;
+    }
+
+    public function create(Movie $movie)
+    {
+        $sql = "INSERT INTO movies(imdbId, title, year, cast, plot, directors, writers, runtime, trailerUrl, rating, votes, dateCreated, dateModified) 
+                                    VALUES (:imdbId, :title, :year, :cast, :plot, :directors, :writers, :runtime, :trailerUrl, 0, 0, NOW(), NOW());";
+
+        $dbh = Db::getDbh();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(":imdbId", $movie->getImdbId());
+        $stmt->bindValue(":title", $movie->getTitle());
+        $stmt->bindValue(":year", $movie->getYear());
+        $stmt->bindValue(":cast", $movie->getCast());
+        $stmt->bindValue(":plot", $movie->getPlot());
+        $stmt->bindValue(":directors", $movie->getDirectors());
+        $stmt->bindValue(":writers", $movie->getWriters());
+        $stmt->bindValue(":runtime", $movie->getRuntime());
+        $stmt->bindValue(":trailerUrl", $movie->getTrailerUrl());
+
+        if($stmt->execute()){
+            $movie->setId($dbh->lastInsertId()); //je récupère l'id du movie que je viens de créer
+            return $movie;
+        }
+        else{
+            return false;
+        }
+
+    }
+
+    public function checkMovie($title)
+    {
+        $sql = "SELECT title FROM movies WHERE title = :title";
+
+        $dbh = Db::getDbh();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(":title", $title);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result;
+    }
+
+    public function deleteMovie($id)
+    {
+        $sql = "DELETE FROM movies WHERE id = :id;";
+
+        $dbh = Db::getDbh();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(":id", $id);
+
+        $stmt->execute();
+
+    }
+    public function update(Movie $movie)
+    {
+        $sql = "UPDATE movies SET imdbId = :imdbId,
+                                  title = :title,
+                                  year = :year, 
+                                  cast = :cast,
+                                  plot = :plot,
+                                  directors = :directors,
+                                  writers = :writers,
+                                  runtime = :runtime,
+                                  trailerUrl = :trailerUrl,
+                                  dateModified = NOW()
+                                  WHERE id = :id;";
+
+        $dbh = Db::getDbh();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(":id", $movie->getId());
+        $stmt->bindValue(":imdbId", $movie->getImdbId());
+        $stmt->bindValue(":title", $movie->getTitle());
+        $stmt->bindValue(":year", $movie->getYear());
+        $stmt->bindValue(":cast", $movie->getCast());
+        $stmt->bindValue(":plot", $movie->getPlot());
+        $stmt->bindValue(":directors", $movie->getDirectors());
+        $stmt->bindValue(":writers", $movie->getWriters());
+        $stmt->bindValue(":runtime", $movie->getRuntime());
+        $stmt->bindValue(":trailerUrl", $movie->getTrailerUrl());
+
+        return $stmt->execute();
     }
 }

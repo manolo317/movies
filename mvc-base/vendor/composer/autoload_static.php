@@ -7,6 +7,13 @@ namespace Composer\Autoload;
 class ComposerStaticInit28975209ce08989df0cd33d0cbfbd136
 {
     public static $prefixesPsr0 = array (
+        'a' => 
+        array (
+            'abeautifulsite' => 
+            array (
+                0 => __DIR__ . '/..' . '/abeautifulsite/simpleimage/src',
+            ),
+        ),
         'S' => 
         array (
             'SecurityLib' => 

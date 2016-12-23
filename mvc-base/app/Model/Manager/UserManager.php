@@ -68,4 +68,15 @@ class UserManager
         return $user;
     }
 
+    public function adminAllowedOnly()
+    {
+        if($_SESSION['user']['role'] === 'admin'){
+            $result = true;
+        }
+        else{
+            $result = false;
+        }
+        return $result;
+    }
+
 }
