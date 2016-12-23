@@ -9,9 +9,9 @@ class View
 	//reçoit le nom de la page à inclure (avec ou sans extension) et le title de la page
 	//pour rendre des variables disponibles dans la vue, on utilise le 
 	//3e argument
-	public static function show($page, $title, array $vars = null)
+	public static function show($page, $title, array $vars = null, $layout = "base.php")
 	{
-		//si on a des données supplémentaires...
+		//si on a des données supplémentaires...  $layout = "base.php" => si je change la valeur je peux mettre une autre base
 		if (!empty($vars)){
 			//on extrait les données
 			//les CLEFS du tableau servent ici de NOM AUX VARIABLES CRÉÉES
@@ -23,7 +23,7 @@ class View
 
 		//base se chargera d'inclure $page
 		//et d'afficher le title dans le head
-		include("app/templates/base.php");
+		include("app/templates/$layout");
 	}
 
 }

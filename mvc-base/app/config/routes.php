@@ -26,4 +26,6 @@
         "/admin/delete" => "adminDeleteMovie",
         "/admin/update" => "adminUpdateMovie",
         "/forbidden" => "error403",
+        "/forbidden" => "error403",
+        "/test" => "testBaseAlternative",
 	];

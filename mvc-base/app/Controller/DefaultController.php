@@ -212,7 +212,7 @@ class DefaultController
 
         }
         //affichage du form
-        View::show("login.php", "Login page", $error);
+        View::show("login.php", "Login page", ["error" => $error]);
     }
     public function logout()
     {
@@ -522,6 +522,12 @@ class DefaultController
     public function addMovieToWishlist()
     {
 
+    }
+
+    public function testBaseAlternative()
+    {
+        $layout = "base_alternative.php";
+        View::show("home.php", "Movie | Accueil", ["layout" => $layout]);
     }
 }
 

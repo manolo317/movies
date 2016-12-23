@@ -30,6 +30,13 @@ nav.form
 	box-shadow: 5px 5px 5px #504E4E;
 	padding:10px;
 }
+div.connected
+{
+	background-color: azure;
+	float: right;
+	border-radius: 5px;
+	padding: 5px;
+}
 .find_button
 {
 	color: #222222;

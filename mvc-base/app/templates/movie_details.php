@@ -23,6 +23,10 @@
         <div class="movie_details"><strong>Votes: </strong><?= $movie->getVotes() ?></div>
         <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?>utes</div>
         <div class="movie_details"><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
+        <form method="POST">
+            <input type="hidden" value="<?= $movie->getId() ?>">
+            <input type="submit" value="add to wishlist">
+        </form>
     </article>
 
 </section>

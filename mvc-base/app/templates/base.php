@@ -37,9 +37,13 @@
                             <div id="navbar" class="collapse navbar-collapse">
                                 <ul class="nav navbar-nav">
                                     <li><a href="<?= BASE_URL ?>" class="glyphicon glyphicon-home"></a></li>
-                                    <li><a href="<?= BASE_URL ?>register">Register</a></li>
-                                    <li><a href="<?= BASE_URL ?>login">Login</a></li>
-                                    <li><a href="<?= BASE_URL ?>logout" class="glyphicon glyphicon-off" title="log out"></a></li>
+                                    <?php if(empty($_SESSION['user'])) {
+                                        echo '<li><a href="' . BASE_URL . 'register">Register</a></li>
+                                              <li><a href="' . BASE_URL . 'login">Login</a></li>';
+                                    } else{
+                                        echo '<li><a href="'. BASE_URL .'logout" class="glyphicon glyphicon-off" title="log out"></a></li>';
+                                    } ?>
+
                                     <li><?php if(!empty($_SESSION['user'])){
                                                     if($_SESSION['user']['role'] === 'admin'){ ?>
                                                         <a href="<?= BASE_URL ?>admin/home">Admin</a> <?php
