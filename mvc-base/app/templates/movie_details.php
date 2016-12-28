@@ -24,10 +24,25 @@
         <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?>utes</div>
         <div class="movie_details"><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
         <form method="POST">
+            <input type="hidden" name="vote" id="vote" value="<?= $movie->getId() ?>">
+            <div class="form-group">
+                <label for="vote">Vote for the movie:</label>
+                <select class="form-control" name ="vote" id="vote">
+                    <?php for ($i=0; $i < 11; $i++): ?> <!--je boucle pour afficher tous les genres-->
+                        <option value="<?= $i ?>"><?= $i ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+            <input type="submit" value="vote">
+        </form>
+
+        <form method="POST">
             <div><h3><?php
                     if(!empty($message)){
                         echo $message;
                     } ?></h3></div>
+
+
             <input type="hidden" name="wish" id="wish" value="<?= $movie->getId() ?>">
             <input type="submit" value="add to wishlist">
         </form>

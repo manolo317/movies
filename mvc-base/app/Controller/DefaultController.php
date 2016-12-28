@@ -6,6 +6,7 @@ use Model\Entity\Movie;
 use Model\Entity\MovieGenre;
 use Model\Manager\MovieGenreManager;
 use Model\Manager\UserManager;
+use Model\Manager\VoteManager;
 use Model\Manager\WishListManager;
 use View\View; //on peut donc utiliser cette classe comme View au lieu de \View\View
 use Model\Manager\MovieManager;
@@ -75,6 +76,8 @@ class DefaultController
 	}
     public function movieDetails()
     {
+        //var_dump($_POST);
+
         $message = null;
         $movieManager = new MovieManager();
         $genreManager = new GenreManager();
@@ -103,9 +106,31 @@ class DefaultController
                 $whishListManager->addMovieToWishList($userId, $movieId);
                 $message = "You added the movie";
             }
-            //var_dump($_POST);
-            //var_dump($_SESSION);
         }
+        // si je vote
+        if(!empty($_POST['vote'])){
+            // je récupère les infos
+            $userId = $_SESSION['user']['id'];
+            $movieId = $id;
+            $vote = intval($_POST['vote']); //je transtype le vote en entier
+            //var_dump($vote);
+            //je verifie si l'user a pas deja voté pour le film
+            $voteManager = new VoteManager();
+            $checkVote = $voteManager->checkVote($userId, $movieId);
+
+            // si ça retourne un résultat je previens l'user
+            if (!empty($checkVote)){
+                $message = "You already voted for this movie";
+            }
+            else{ // sinon j'ajoute la note
+
+                $voteManager->voteForAMovie($userId, $movieId, $vote);
+                $movieManager->updateVote($movie, $vote);
+                $message = "Your vote is registered";
+            }
+
+        }
+
         //affiche la vue en lui passant le post
         View::show("movie_details.php", $movie->getTitle(), ["movie" =>$movie,
                                                              "genre" =>$genre,

@@ -277,4 +277,22 @@ class MovieManager
         return $results;
     }
 
+    public function updateVote(Movie $movie, $vote)
+    {
+        $sql = "UPDATE movies SET votes = :votes,
+                                  rating = :rating
+                                  WHERE id = :id;";
+
+        $dbh = Db::getDbh();
+        $stmt = $dbh->prepare($sql);
+        $newVote =  ($movie->getVotes()+1);
+        $newRating = (($movie->getRating())*($movie->getVotes())+ $vote)/$newVote;
+
+        $stmt->bindValue(":id", $movie->getId());
+        $stmt->bindValue(":votes", $newVote);
+        $stmt->bindValue(":rating", $newRating);
+
+        return $stmt->execute();
+    }
+
 }
