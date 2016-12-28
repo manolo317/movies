@@ -6,6 +6,7 @@ use Model\Entity\Movie;
 use Model\Entity\MovieGenre;
 use Model\Manager\MovieGenreManager;
 use Model\Manager\UserManager;
+use Model\Manager\WishListManager;
 use View\View; //on peut donc utiliser cette classe comme View au lieu de \View\View
 use Model\Manager\MovieManager;
 use Model\Manager\GenreManager;
@@ -74,6 +75,7 @@ class DefaultController
 	}
     public function movieDetails()
     {
+        $message = null;
         $movieManager = new MovieManager();
         $genreManager = new GenreManager();
         //créé le movie dont l'Id est dans l'URL
@@ -84,8 +86,30 @@ class DefaultController
         if(empty($movie)){
             return $this->error404();
         }
+        // si j'ai ajouté un film
+        if(!empty($_POST['wish'])){
+            // je récupère l'Id de l'user et du film
+            $movieId = $_POST['wish'];
+            $userId = $_SESSION['user']['id'];
+            $whishListManager = new WishListManager();
+            // je vérifie s'il a pas deja été ajouté
+            $checkWish = $whishListManager->checkWish($userId, $movieId);
+
+            // si ça retourne un résultat je previens l'user
+            if (!empty($checkWish)){
+                $message = "You already added this movie";
+            }
+            else{ // sinon j'ajoute le film à la wishlist
+                $whishListManager->addMovieToWishList($userId, $movieId);
+                $message = "You added the movie";
+            }
+            //var_dump($_POST);
+            //var_dump($_SESSION);
+        }
         //affiche la vue en lui passant le post
-        View::show("movie_details.php", $movie->getTitle(), ["movie" =>$movie, "genre" =>$genre]);
+        View::show("movie_details.php", $movie->getTitle(), ["movie" =>$movie,
+                                                             "genre" =>$genre,
+                                                             "message" =>$message]);
     }
 
 	/**
@@ -519,10 +543,27 @@ class DefaultController
                                                                 "postErrors" =>$postErrors]);
     }
 
-    public function addMovieToWishlist()
+    public function wishlist()
     {
+        $movieManager = new MovieManager();
+        //je récupère l'Id de l'user pour afficher tous ses films de sa wishlist
+        $userId = $_SESSION['user']['id'];
+        $movies = $movieManager->findAllByWish($userId);
 
+        View::show("wishlist.php", "Movie | Your wishlist", ["movies" => $movies]);
     }
+
+    public function removeMovieWishlist()
+    {
+        $wishListManager = new WishListManager();
+        // je recupère l'Id de l'user et l'Id du film qu'il veut enlever de sa wishlist
+        $userId = $_SESSION['user']['id'];
+        $movieId = $_GET['id'];
+        $wishListManager->removeMovieFromWishList($userId, $movieId);
+
+        View::show("remove_movie_wishlist.php", "Movie | Remove");
+    }
+
 
     public function testBaseAlternative()
     {

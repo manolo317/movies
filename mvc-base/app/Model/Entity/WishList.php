@@ -13,6 +13,7 @@ class WishList
 {
     private $userId;
     private $movieId;
+    private $dateRegistered;
 
     /**
      * @return mixed
@@ -44,6 +45,22 @@ class WishList
     public function setMovieId($movieId)
     {
         $this->movieId = $movieId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDateRegistered()
+    {
+        return $this->dateRegistered;
+    }
+
+    /**
+     * @param mixed $dateRegistred
+     */
+    public function setDateRegistered($dateRegistered)
+    {
+        $this->dateRegistered = $dateRegistered;
     }
 
 

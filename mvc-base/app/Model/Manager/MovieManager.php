@@ -256,4 +256,25 @@ class MovieManager
 
         return $stmt->execute();
     }
+
+    public function findAllByWish($userId)
+    {
+
+        $sql = "SELECT m.id, m.imdbId, m.title, m.year, m.cast, m.plot, m.directors, m.writers, m.rating, m.votes, m.runtime, m.trailerUrl
+                FROM movies m
+                INNER JOIN wish_list w
+                ON m.id = w.movie_id
+                WHERE w.user_id = :userId
+                ORDER BY rating DESC;";
+
+        $dbh = Db::getDbh();
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(":userId", $userId);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_CLASS, '\Model\Entity\Movie');
+
+        return $results;
+    }
+
 }

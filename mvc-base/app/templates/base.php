@@ -41,7 +41,8 @@
                                         echo '<li><a href="' . BASE_URL . 'register">Register</a></li>
                                               <li><a href="' . BASE_URL . 'login">Login</a></li>';
                                     } else{
-                                        echo '<li><a href="'. BASE_URL .'logout" class="glyphicon glyphicon-off" title="log out"></a></li>';
+                                        echo '<li><a href="'. BASE_URL .'logout" class="glyphicon glyphicon-off" title="log out"></a></li>
+                                              <li><a href="'. BASE_URL .'wishlist" class="glyphicon glyphicon-heart" title="wishlist"></a></li>';
                                     } ?>
 
                                     <li><?php if(!empty($_SESSION['user'])){

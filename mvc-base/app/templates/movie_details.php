@@ -24,7 +24,11 @@
         <div class="movie_details"><strong>Runtime: </strong><?= $movie->getRuntime() ?>utes</div>
         <div class="movie_details"><a href="<?= $movie->getTrailerUrl() ?>">trailer</a></div>
         <form method="POST">
-            <input type="hidden" value="<?= $movie->getId() ?>">
+            <div><h3><?php
+                    if(!empty($message)){
+                        echo $message;
+                    } ?></h3></div>
+            <input type="hidden" name="wish" id="wish" value="<?= $movie->getId() ?>">
             <input type="submit" value="add to wishlist">
         </form>
     </article>

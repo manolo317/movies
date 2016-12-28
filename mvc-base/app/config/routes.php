@@ -25,6 +25,8 @@
         "/admin/create" => "adminCreateMovie",
         "/admin/delete" => "adminDeleteMovie",
         "/admin/update" => "adminUpdateMovie",
+        "/wishlist" => "wishlist",
+        "/wishlist/remove" => "removeMovieWishlist",
         "/forbidden" => "error403",
         "/forbidden" => "error403",
         "/test" => "testBaseAlternative",
